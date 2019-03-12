@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+
+  "name": "Yandex Direct Plugin",
+  "description": "This extension parse ads from yandex direct selected key phrases",
+  "version": "1.0",
+
+  "content_scripts": [
+    {
+      "matches": ["https://direct.yandex.ru/registered/main.pl?cmd=advancedForecast"],
+      "js": ["js/jquery-3.3.1.min.js", "content.js"]
+    }
+  ],
+
+  "permissions": [
+    "activeTab"
+  ]
+}
