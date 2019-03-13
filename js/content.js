@@ -26,12 +26,8 @@ function updateControls() {
 
             span.click(() => {
                 if (span.hasClass(linkClass)) {
-                    let geo = $('#geo').val();
                     span.removeClass(linkClass);
-
-                    collectContacts(phrase, geo, () => {
-                        span.addClass(linkClass);
-                    });
+                    collectContacts(phrase, () => {span.addClass(linkClass);});
                 }
             });
 
@@ -42,8 +38,8 @@ function updateControls() {
 }
 
 
-function collectContacts(phrase, geo, cb) {
-    console.log('Collect contants: phrase = ' + phrase + '; geo = ' + geo);
+function collectContacts(phrase, cb) {
+    let geo = $('#geo').val();
 
     $.ajax({
         url: `https://direct.yandex.ru/registered/main.pl?cmd=showCompetitors&phrase=${phrase}&geo=${geo}`,
@@ -51,13 +47,21 @@ function collectContacts(phrase, geo, cb) {
             parseAds(data, cb);
         }
     });
+    console.log('Collect contants: phrase = ' + phrase + '; geo = ' + geo);
 }
 
 
 function parseAds(html, cb) {
-    let result = [];
-    let spans = $(html).find('.b-banner-preview__footer > span.link');
-    let count = spans.length;
+    let result   = [];
+    let spans    = $(html).find('.b-banner-preview__footer > span.link');
+    let count    = spans.length;
+    let onResult = () => {
+        count = count - 1;
+        if (count <= 0) {
+            saveToFile(result);
+            cb();
+        }
+    };
 
     spans.each((index, row) => {
         let bem = $(row).data('bem');
@@ -67,11 +71,7 @@ function parseAds(html, cb) {
            url: url,
            success: (data) => {
                result[index] = parseContacts(data);
-               count = count - 1;
-               if (count <= 0) {
-                   saveToFile(result);
-                   cb();
-               }
+               onResult();
            }
         });
     });
