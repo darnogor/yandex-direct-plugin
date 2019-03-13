@@ -8,11 +8,10 @@
   "content_scripts": [
     {
       "matches": ["https://direct.yandex.ru/registered/main.pl?cmd=advancedForecast"],
-      "js": ["js/jquery-3.3.1.min.js", "content.js"]
+      "js": ["js/jquery-3.3.1.js", "content.js"],
+      "run_at": "document_end"
     }
   ],
 
-  "permissions": [
-    "activeTab"
-  ]
+  "permissions": ["activeTab"]
 }
