@@ -91,7 +91,7 @@ function parseContacts(html) {
 
     return {
         name: name.replace(/"/g, "'"),
-        phone: phone,
+        phone: phone.replace(/\+/g, ''),
         site: site
     }
 }
@@ -102,7 +102,7 @@ function saveToFile(req, data) {
     let columnNames = `"Название компании";"Телефон";"Сайт"`;
 
     let csv = data.reduce(
-        (result, obj) => `${result}\n"${obj.name}";"${obj.phone}";"${obj.site}"`,
+        (result, obj) => `${result}\n"${obj.name}";"${obj.site}";"${obj.phone}"`,
         `${csvHeader}\n\n${columnNames}`);
 
     let contentType = 'text/csv';
