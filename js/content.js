@@ -20,11 +20,19 @@ function updateControls() {
         let list   = $(row).find('td:nth-child(4) ul').first();
 
         if (list.children().length <= 3) {
-            let li   = $(`<li></li>`);
-            let span = $(`<span class="b-pseudo-link">собрать контакты</span>`);
+            let linkClass = 'b-pseudo-link';
+            let li        = $(`<li></li>`);
+            let span      = $(`<span class="${linkClass}">собрать контакты</span>`);
+
             span.click(() => {
-                let geo = $('#geo').val();
-                collectContacts(phrase, geo);
+                if (span.hasClass(linkClass)) {
+                    let geo = $('#geo').val();
+                    span.removeClass(linkClass);
+
+                    collectContacts(phrase, geo, () => {
+                        span.addClass(linkClass);
+                    });
+                }
             });
 
             li.append(span);
@@ -34,19 +42,19 @@ function updateControls() {
 }
 
 
-function collectContacts(phrase, geo) {
+function collectContacts(phrase, geo, cb) {
     console.log('Collect contants: phrase = ' + phrase + '; geo = ' + geo);
 
     $.ajax({
         url: `https://direct.yandex.ru/registered/main.pl?cmd=showCompetitors&phrase=${phrase}&geo=${geo}`,
         success: (data) => {
-            parseAds(data);
+            parseAds(data, cb);
         }
     });
 }
 
 
-function parseAds(html) {
+function parseAds(html, cb) {
     let result = [];
     let spans = $(html).find('.b-banner-preview__footer > span.link');
     let count = spans.length;
@@ -62,6 +70,7 @@ function parseAds(html) {
                count = count - 1;
                if (count <= 0) {
                    saveToFile(result);
+                   cb();
                }
            }
         });
